@@ -35,6 +35,10 @@
     <div id="svg-container"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <script>
         fetch('world_with_dots.svg')
             .then(res => res.text())
@@ -45,26 +49,52 @@
 
                 circles.forEach(c => {
                     c.classList.add('dot');
-                    c.setAttribute('r', 2);          // make them visible
-                    c.setAttribute('fill', '#00e5ff');
+                    c.setAttribute('r', 0.25);           // average radius 0.25
+                    c.setAttribute('fill', '#FFA500');    // base color
+                    c.setAttribute('opacity', 0.6);
                 });
 
-                // IMPORTANT: animation must start AFTER SVG is injected
-                startAnimation();
+                startGlowRandomSubset(circles, 0.01); // 0.1% glow
             });
 
-        function startAnimation() {
-            anime({
-                targets: '.dot',
-                r: [2, 10],
-                fill: ['#00ff00', '#ff0000'],
-                duration: 800,
-                direction: 'alternate',
-                easing: 'easeInOutQuad',
-                loop: true
+        function startGlowRandomSubset(allDots, fraction) {
+            const count = Math.max(1, Math.floor(allDots.length * fraction));
+
+            // randomly pick some dots
+            const glowingDots = [];
+            const indices = Array.from({ length: allDots.length }, (_, i) => i);
+            for (let i = 0; i < count; i++) {
+                const idx = Math.floor(Math.random() * indices.length);
+                glowingDots.push(allDots[indices[idx]]);
+                indices.splice(idx, 1); // remove to avoid duplicates
+            }
+
+            // animate only the selected dots
+            glowingDots.forEach(dot => {
+                anime({
+                    targets: dot,
+                    r: [
+                        { value: 0.25, duration: random(400, 1200) },     // base size
+                        { value: random(1, 2.5), duration: random(400, 1200) } // glow size
+                    ],
+                    opacity: [
+                        { value: 0.2, duration: random(400, 1200) },
+                        { value: 1, duration: random(400, 1200) }
+                    ],
+                    easing: 'easeInOutSine',
+                    direction: 'alternate',
+                    loop: true,
+                    delay: random(0, 500)
+                });
             });
         }
+
+        // helper function to get a random number between min and max
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
     </script>
+
 
 </body>
 
