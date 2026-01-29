@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Sandbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            font-family: sans-serif;
+        }
+
+        #canvas {
+            background: #777;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="svg-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script>
+        fetch('world_with_dots.svg')
+            .then(res => res.text())
+            .then(svg => {
+                document.getElementById('svg-container').innerHTML = svg;
+
+                const circles = document.querySelectorAll('#svg-container svg circle');
+
+                circles.forEach(c => {
+                    c.classList.add('dot');
+                    c.setAttribute('r', 2);          // make them visible
+                    c.setAttribute('fill', '#00e5ff');
+                });
+
+                // IMPORTANT: animation must start AFTER SVG is injected
+                startAnimation();
+            });
+
+        function startAnimation() {
+            anime({
+                targets: '.dot',
+                r: [2, 10],
+                fill: ['#00ff00', '#ff0000'],
+                duration: 800,
+                direction: 'alternate',
+                easing: 'easeInOutQuad',
+                loop: true
+            });
+        }
+    </script>
+
+</body>
+
+</html>
